@@ -2,197 +2,207 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Night Out Cravings</title>
 
 <style>
-html { scroll-behavior: smooth; }
-
 body {
   margin: 0;
   font-family: Arial;
-  background: #0d0d0d;
-  color: white;
+  background: #f5f5f5;
 }
 
-/* NAV */
-nav {
-  background: black;
+/* HEADER */
+.header {
+  background: #fc8019;
+  color: white;
   padding: 15px;
   text-align: center;
-  position: sticky;
-  top: 0;
+  font-weight: bold;
 }
 
-nav a {
-  color: #ffcc00;
-  margin: 15px;
-  text-decoration: none;
+/* SCREENS */
+.screen {
+  display: none;
+  padding-bottom: 70px;
 }
-
-/* HERO */
-#home {
-  background: url('https://images.unsplash.com/photo-1600891964599-f61ba0e24092');
-  padding: 100px 20px;
-  text-align: center;
+.active {
+  display: block;
 }
 
 /* SEARCH */
-.search-box {
-  text-align: center;
-  margin: 20px;
-}
-
-input {
+.search {
   padding: 10px;
-  width: 80%;
-  max-width: 300px;
+}
+.search input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
 }
 
 /* PRODUCTS */
-.products {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 20px;
-}
-
 .card {
-  background: #1f1f1f;
+  display: flex;
+  background: white;
+  margin: 10px;
   border-radius: 10px;
-  width: 220px;
   overflow: hidden;
 }
 
 .card img {
-  width: 100%;
-  height: 140px;
+  width: 100px;
+  height: 100px;
   object-fit: cover;
 }
 
-.card h3 { margin: 10px; }
-
-.price { color: #ffcc00; }
-
-button {
-  margin: 5px;
-  padding: 5px 10px;
-  cursor: pointer;
+.details {
+  padding: 10px;
+  flex: 1;
 }
 
-/* CART */
-.cart {
-  background: black;
-  padding: 15px;
-  position: fixed;
-  bottom: 0;
-  width: 100%;
+.price {
+  color: #fc8019;
 }
 
 .btn {
-  background: #25D366;
+  background: #fc8019;
   color: white;
-  padding: 10px;
   border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
 }
 
-/* ADDRESS */
-textarea {
-  width: 90%;
-  max-width: 400px;
-  height: 60px;
-  margin-top: 10px;
+/* CART */
+.cart-item {
+  background: white;
+  margin: 10px;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+/* BOTTOM NAV */
+.nav {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  background: white;
+  border-top: 1px solid #ccc;
+}
+
+.nav div {
+  flex: 1;
+  text-align: center;
+  padding: 10px;
+  cursor: pointer;
 }
 </style>
 </head>
 
 <body>
 
-<nav>
-  <a href="#home">Home</a>
-  <a href="#menu">Menu</a>
-  <a href="#contact">Contact</a>
-</nav>
+<div class="header">Night Out Cravings 🌙</div>
 
-<section id="home">
-  <h1>Night Out Cravings 🌙</h1>
-  <p>Late Night Delivery 🚀</p>
-</section>
-
-<section id="menu">
-  <h2>Menu</h2>
-
-  <div class="search-box">
-    <input type="text" id="search" placeholder="Search food..." onkeyup="renderItems()">
+<!-- HOME -->
+<div id="home" class="screen active">
+  <div class="search">
+    <input type="text" placeholder="Search..." onkeyup="searchItem(this.value)">
   </div>
+  <div id="products"></div>
+</div>
 
-  <div class="products" id="products"></div>
-</section>
+<!-- CART -->
+<div id="cart" class="screen">
+  <h3 style="text-align:center;">Your Cart</h3>
+  <div id="cartItems"></div>
+  <h3 style="text-align:center;">Total: ₹<span id="total">0</span></h3>
+  <div style="text-align:center;">
+    <button class="btn" onclick="orderNow()">Order on WhatsApp</button>
+  </div>
+</div>
 
-<section id="contact">
-  <h2>Delivery Address</h2>
-  <textarea id="address" placeholder="Enter your address..."></textarea>
-</section>
+<!-- PROFILE -->
+<div id="profile" class="screen">
+  <h3 style="text-align:center;">👤 Profile</h3>
+  <p style="text-align:center;">Night Out Cravings User</p>
+</div>
 
-<div class="cart">
-  <h3>Total: ₹<span id="total">0</span></h3>
-  <button class="btn" onclick="orderNow()">Order on WhatsApp</button>
+<!-- NAV -->
+<div class="nav">
+  <div onclick="show('home')">🏠 Home</div>
+  <div onclick="show('cart')">🛒 Cart</div>
+  <div onclick="show('profile')">👤 Profile</div>
 </div>
 
 <script>
 const items = [
-  {name:"Burger", price:120, category:"fast", img:"https://images.unsplash.com/photo-1568901346375-23c9450c58cd"},
-  {name:"Pizza", price:250, category:"fast", img:"https://images.unsplash.com/photo-1601924582975-7e6cbe9c55a3"},
-  {name:"Kurkure", price:20, category:"snack", img:"https://images.unsplash.com/photo-1621939514649-280e2ee25f60"},
-  {name:"Tedhe Medhe", price:20, category:"snack", img:"https://images.unsplash.com/photo-1606755962773-d324e0a13086"},
-  {name:"Chocobakes", price:10, category:"snack", img:"https://images.unsplash.com/photo-1586985289688-ca3cf47d3e6e"},
-  {name:"Jim Jam", price:20, category:"snack", img:"https://images.unsplash.com/photo-1617196038435-1e7c7e4d5a76"}
+  {name:"Burger", price:120, img:"https://images.unsplash.com/photo-1568901346375-23c9450c58cd"},
+  {name:"Pizza", price:250, img:"https://images.unsplash.com/photo-1601924582975-7e6cbe9c55a3"},
+  {name:"Kurkure", price:20, img:"https://images.unsplash.com/photo-1599490659213-e2b9527bd087"},
+  {name:"Tedhe Medhe", price:20, img:"https://images.unsplash.com/photo-1625944230945-1b7dd3b949ab"},
+  {name:"Chocobakes", price:10, img:"https://images.unsplash.com/photo-1606312619070-d48b4c652a52"},
+  {name:"Jim Jam", price:20, img:"https://images.unsplash.com/photo-1589307004391-2d3d3c4d56b6"}
 ];
 
 let cart = {};
-
 items.forEach((_,i)=>cart[i]=0);
 
-function renderItems(){
-  const search = document.getElementById("search").value.toLowerCase();
+function render(list){
   const container = document.getElementById("products");
   container.innerHTML = "";
 
-  items.forEach((item,i)=>{
-    if(item.name.toLowerCase().includes(search)){
-      container.innerHTML += `
-        <div class="card">
-          <img src="${item.img}">
-          <h3>${item.name}</h3>
-          <p class="price">₹${item.price}</p>
-          <button onclick="dec(${i})">-</button>
-          ${cart[i]}
-          <button onclick="inc(${i})">+</button>
+  list.forEach((item,i)=>{
+    container.innerHTML += `
+      <div class="card">
+        <img src="${item.img}">
+        <div class="details">
+          <h4>${item.name}</h4>
+          <div class="price">₹${item.price}</div>
+          <button class="btn" onclick="add(${i})">ADD</button>
         </div>
-      `;
-    }
+      </div>
+    `;
   });
 }
 
-function inc(i){ cart[i]++; update(); }
-function dec(i){ if(cart[i]>0) cart[i]--; update(); }
+function add(i){
+  cart[i]++;
+  updateCart();
+}
 
-function update(){
-  renderItems();
-  let total=0;
-  items.forEach((item,i)=> total+=item.price*cart[i]);
+function updateCart(){
+  let container = document.getElementById("cartItems");
+  container.innerHTML = "";
+  let total = 0;
+
+  items.forEach((item,i)=>{
+    if(cart[i]>0){
+      container.innerHTML += `
+        <div class="cart-item">
+          ${item.name} x${cart[i]} = ₹${item.price*cart[i]}
+        </div>
+      `;
+      total += item.price*cart[i];
+    }
+  });
+
   document.getElementById("total").innerText = total;
 }
 
+function show(screen){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById(screen).classList.add("active");
+}
+
+function searchItem(val){
+  val = val.toLowerCase();
+  render(items.filter(i=>i.name.toLowerCase().includes(val)));
+}
+
 function orderNow(){
-  let address = document.getElementById("address").value;
-
-  if(address.trim()===""){
-    alert("Please enter delivery address!");
-    return;
-  }
-
   let msg = "🌙 Night Out Cravings Order 🌙\n\n";
-  let total=0;
+  let total = 0;
 
   items.forEach((item,i)=>{
     if(cart[i]>0){
@@ -206,15 +216,12 @@ function orderNow(){
     return;
   }
 
-  msg += `\n📍 Address: ${address}\n`;
-  msg += `\n💰 Total: ₹${total}\n`;
-  msg += "\n🚀 Please deliver fast. Thank you! 😊";
+  msg += `\n💰 Total: ₹${total}\n🚀 Deliver fast!`;
 
-  let url = "https://wa.me/9522278253?text=" + encodeURIComponent(msg);
-  window.open(url);
+  window.open("https://wa.me/9522278253?text="+encodeURIComponent(msg));
 }
 
-renderItems();
+render(items);
 </script>
 
 </body>
