@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Night Out Cravings</title>
+
+<style>
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  font-family: Arial;
+  background: #0d0d0d;
+  color: white;
+}
+
+/* NAV */
+nav {
+  background: black;
+  padding: 15px;
+  text-align: center;
+  position: sticky;
+  top: 0;
+}
+
+nav a {
+  color: #ffcc00;
+  margin: 15px;
+  text-decoration: none;
+}
+
+/* HERO */
+#home {
+  background: url('https://images.unsplash.com/photo-1600891964599-f61ba0e24092');
+  padding: 100px 20px;
+  text-align: center;
+}
+
+/* SEARCH */
+.search-box {
+  text-align: center;
+  margin: 20px;
+}
+
+input {
+  padding: 10px;
+  width: 80%;
+  max-width: 300px;
+}
+
+/* PRODUCTS */
+.products {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+
+.card {
+  background: #1f1f1f;
+  border-radius: 10px;
+  width: 220px;
+  overflow: hidden;
+}
+
+.card img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+}
+
+.card h3 { margin: 10px; }
+
+.price { color: #ffcc00; }
+
+button {
+  margin: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+/* CART */
+.cart {
+  background: black;
+  padding: 15px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+.btn {
+  background: #25D366;
+  color: white;
+  padding: 10px;
+  border: none;
+}
+
+/* ADDRESS */
+textarea {
+  width: 90%;
+  max-width: 400px;
+  height: 60px;
+  margin-top: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<nav>
+  <a href="#home">Home</a>
+  <a href="#menu">Menu</a>
+  <a href="#contact">Contact</a>
+</nav>
+
+<section id="home">
+  <h1>Night Out Cravings 🌙</h1>
+  <p>Late Night Delivery 🚀</p>
+</section>
+
+<section id="menu">
+  <h2>Menu</h2>
+
+  <div class="search-box">
+    <input type="text" id="search" placeholder="Search food..." onkeyup="renderItems()">
+  </div>
+
+  <div class="products" id="products"></div>
+</section>
+
+<section id="contact">
+  <h2>Delivery Address</h2>
+  <textarea id="address" placeholder="Enter your address..."></textarea>
+</section>
+
+<div class="cart">
+  <h3>Total: ₹<span id="total">0</span></h3>
+  <button class="btn" onclick="orderNow()">Order on WhatsApp</button>
+</div>
+
+<script>
+const items = [
+  {name:"Burger", price:120, category:"fast", img:"https://images.unsplash.com/photo-1568901346375-23c9450c58cd"},
+  {name:"Pizza", price:250, category:"fast", img:"https://images.unsplash.com/photo-1601924582975-7e6cbe9c55a3"},
+  {name:"Kurkure", price:20, category:"snack", img:"https://images.unsplash.com/photo-1621939514649-280e2ee25f60"},
+  {name:"Tedhe Medhe", price:20, category:"snack", img:"https://images.unsplash.com/photo-1606755962773-d324e0a13086"},
+  {name:"Chocobakes", price:10, category:"snack", img:"https://images.unsplash.com/photo-1586985289688-ca3cf47d3e6e"},
+  {name:"Jim Jam", price:20, category:"snack", img:"https://images.unsplash.com/photo-1617196038435-1e7c7e4d5a76"}
+];
+
+let cart = {};
+
+items.forEach((_,i)=>cart[i]=0);
+
+function renderItems(){
+  const search = document.getElementById("search").value.toLowerCase();
+  const container = document.getElementById("products");
+  container.innerHTML = "";
+
+  items.forEach((item,i)=>{
+    if(item.name.toLowerCase().includes(search)){
+      container.innerHTML += `
+        <div class="card">
+          <img src="${item.img}">
+          <h3>${item.name}</h3>
+          <p class="price">₹${item.price}</p>
+          <button onclick="dec(${i})">-</button>
+          ${cart[i]}
+          <button onclick="inc(${i})">+</button>
+        </div>
+      `;
+    }
+  });
+}
+
+function inc(i){ cart[i]++; update(); }
+function dec(i){ if(cart[i]>0) cart[i]--; update(); }
+
+function update(){
+  renderItems();
+  let total=0;
+  items.forEach((item,i)=> total+=item.price*cart[i]);
+  document.getElementById("total").innerText = total;
+}
+
+function orderNow(){
+  let address = document.getElementById("address").value;
+
+  if(address.trim()===""){
+    alert("Please enter delivery address!");
+    return;
+  }
+
+  let msg = "🌙 Night Out Cravings Order 🌙\n\n";
+  let total=0;
+
+  items.forEach((item,i)=>{
+    if(cart[i]>0){
+      msg += `👉 ${item.name} x${cart[i]} = ₹${item.price*cart[i]}\n`;
+      total += item.price*cart[i];
+    }
+  });
+
+  if(total===0){
+    alert("Add items first!");
+    return;
+  }
+
+  msg += `\n📍 Address: ${address}\n`;
+  msg += `\n💰 Total: ₹${total}\n`;
+  msg += "\n🚀 Please deliver fast. Thank you! 😊";
+
+  let url = "https://wa.me/9522278253?text=" + encodeURIComponent(msg);
+  window.open(url);
+}
+
+renderItems();
+</script>
+
+</body>
+</html>
